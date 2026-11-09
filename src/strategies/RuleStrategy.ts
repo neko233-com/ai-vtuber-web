@@ -21,11 +21,11 @@ function isCanvasEvent(canvasSelector: string | undefined, event: PageEvent): bo
   return t.tag === 'canvas' || (t.classes ?? []).includes('vtuber-canvas')
 }
 
-/** Scroll reaction: gaze direction follows the wheel sign. */
+/** Scroll reaction: gaze direction follows the wheel sign (jittered later). */
 function scrollReaction(event: PageEvent): Reaction {
   const sign = (event.deltaY ?? 0) >= 0 ? 1 : -1
   return {
-    params: { eyeBallX: jitter(0.3) * sign, eyeBallY: -0.1 },
+    params: { eyeBallX: 0.3 * sign, eyeBallY: -0.1 },
     holdMs: 400,
     decayMs: 500,
   }

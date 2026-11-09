@@ -28,7 +28,14 @@ function makeAgent(
   chat: (msgs: ChatMessage[]) => Promise<string>,
   timeoutMs = 4000,
 ): { agent: AgentStrategy; fallback: RuleStrategy } {
-  const fallback = new RuleStrategy({ now })
+  const fallback = new RuleStrategy({
+    now,
+    rules: {
+      // deterministic fallbacks for assertions
+      click: [{ reaction: { expression: 'smile' }, cooldownMs: 0 }],
+      'hover-enter': [{ reaction: { expression: 'shy' }, cooldownMs: 0 }],
+    },
+  })
   const agent = new AgentStrategy({
     chat,
     timeoutMs,

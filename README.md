@@ -16,37 +16,37 @@ npm install ai-vtuber-web @livliv-dev/player
 ## Quick Start
 
 ```ts
-import { Player } from '@livliv-dev/player'
-import { LivePresence } from 'ai-vtuber-web'
+import { Player } from "@livliv-dev/player";
+import { LivePresence } from "ai-vtuber-web";
 
-const canvas = document.querySelector('canvas')!
-const player = new Player(canvas)
-await player.load('https://cdn.jsdelivr.net/gh/livliv-dev/player@main/characters/d03/')
+const canvas = document.querySelector("canvas")!;
+const player = new Player(canvas);
+await player.load("https://cdn.jsdelivr.net/gh/livliv-dev/player@main/characters/d03/");
 
 const presence = new LivePresence(player, {
-  mode: 'auto',                                 // 'rules' | 'agent' | 'auto'
+  mode: "auto", // 'rules' | 'agent' | 'auto'
   idleAfterMs: 15_000,
   throttle: { minIntervalMs: 1200, maxPerMin: 24 },
-  onEvent: (e) => console.log('event', e),
-  onReaction: (r) => console.log('reaction', r),
-  onSay: (text) => console.log('她说：', text), // TTS 由你接入
+  onEvent: (e) => console.log("event", e),
+  onReaction: (r) => console.log("reaction", r),
+  onSay: (text) => console.log("她说：", text), // TTS 由你接入
   onError: (err) => console.error(err),
-})
-presence.start()
+});
+presence.start();
 
 // 运行时切换策略
-presence.setMode('rules')
+presence.setMode("rules");
 ```
 
 就这样。角色的呼吸、眨眼、视线跟随鼠标由 LivLiv Player 自带的 `idle` / `followPointer` 提供；ai-vtuber-web 在其上叠加**行为层**：
 
-| 你的行为 | 角色默认反应 |
-|---|---|
-| 点击画布 | 惊讶 + 跳一下（hop） |
-| 点击页面其他地方 | 微笑 + 眨眼 |
-| 悬停链接/按钮 | 害羞 或 微笑（随机） |
-| 滚动页面 | 视线随滚动方向瞟过去 |
-| 静置 15 秒 | 自己找事做：瞟向别处 / 歪头 / 轻笑 |
+| 你的行为         | 角色默认反应                       |
+| ---------------- | ---------------------------------- |
+| 点击画布         | 惊讶 + 跳一下（hop）               |
+| 点击页面其他地方 | 微笑 + 眨眼                        |
+| 悬停链接/按钮    | 害羞 或 微笑（随机）               |
+| 滚动页面         | 视线随滚动方向瞟过去               |
+| 静置 15 秒       | 自己找事做：瞟向别处 / 歪头 / 轻笑 |
 
 所有规则都可以覆盖（见下文 RuleStrategy）。
 
@@ -56,30 +56,30 @@ presence.setMode('rules')
 
 ```ts
 const presence = new LivePresence(player, {
-  mode: 'agent',
+  mode: "agent",
   agent: {
     chat: async (messages) => {
-      const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
-        method: 'POST',
+      const res = await fetch("https://api.deepseek.com/v1/chat/completions", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_LLM_KEY}`,
         },
         body: JSON.stringify({
-          model: 'deepseek-chat',
+          model: "deepseek-chat",
           messages,
           temperature: 0.7,
           max_tokens: 200,
         }),
-      })
-      if (!res.ok) throw new Error(`LLM HTTP ${res.status}`)
-      const data = await res.json()
-      return data.choices[0]?.message?.content ?? ''
+      });
+      if (!res.ok) throw new Error(`LLM HTTP ${res.status}`);
+      const data = await res.json();
+      return data.choices[0]?.message?.content ?? "";
     },
-    timeoutMs: 4000,      // 超时回退 rules
-    characterName: 'Nana',
+    timeoutMs: 4000, // 超时回退 rules
+    characterName: "Nana",
   },
-})
+});
 ```
 
 工作方式：
@@ -95,18 +95,18 @@ API Key 安全提示：浏览器直连意味着 key 暴露在前端。生产环�
 ## 自定义策略
 
 ```ts
-import type { Strategy } from 'ai-vtuber-web'
+import type { Strategy } from "ai-vtuber-web";
 
 const hypno: Strategy = {
-  name: 'hypno',
+  name: "hypno",
   decide(event) {
-    if (event.type === 'click') return { expression: 'angry', act: 'shake' }
-    return null
+    if (event.type === "click") return { expression: "angry", act: "shake" };
+    return null;
   },
-}
+};
 
-presence.useStrategy('hypno', hypno) // 'rules' / 'agent' 是保留名
-presence.setMode('hypno')
+presence.useStrategy("hypno", hypno); // 'rules' / 'agent' 是保留名
+presence.setMode("hypno");
 ```
 
 `decide` 返回 `Reaction | null`（或其 Promise），`Reaction` 字段见 [types.ts](src/types.ts)：`expression` / `weight` / `act` / `blink` / `params`（每帧叠加的参数 offset）/ `poke` / `say` / `holdMs` / `decayMs`。
@@ -115,18 +115,21 @@ presence.setMode('hypno')
 
 ```ts
 const presence = new LivePresence(player, {
-  mode: 'rules',
+  mode: "rules",
   rules: {
     // 整体替换 click 规则（数组内随机挑一条，各自有冷却）
     click: [
-      { match: (e) => e.target?.tag === 'canvas',
-        reaction: { act: 'hop', expression: 'angry' }, cooldownMs: 2000 },
-      { reaction: { expression: 'sad' }, cooldownMs: 8000 },
+      {
+        match: (e) => e.target?.tag === "canvas",
+        reaction: { act: "hop", expression: "angry" },
+        cooldownMs: 2000,
+      },
+      { reaction: { expression: "sad" }, cooldownMs: 8000 },
     ],
     scroll: null, // 禁用滚动反应
   },
-  canvasSelector: '#my-stage', // 标记哪个是 VTuber 画布
-})
+  canvasSelector: "#my-stage", // 标记哪个是 VTuber 画布
+});
 ```
 
 ## 支持的角色类型
@@ -152,13 +155,13 @@ Demo 包含：模式切换、agent endpoint 配置面板、角色切换（jsDeli
 
 ## 工具链（vite-plus）
 
-| 脚本 | 命令 | 说明 |
-|---|---|---|
-| `npm run dev` | `vp dev` | demo 开发服务器 |
-| `npm run build` | `vp build` | demo 构建 → `dist-demo/` |
-| `npm run build:lib` | `vp pack` | 库构建 → `dist/`（ESM + d.ts，tsdown） |
-| `npm run test` | `vp test` | Vitest（49 个单测，纯逻辑无 WebGL） |
-| `npm run check` | `vp check` | 类型检查 + Oxlint + Oxfmt |
+| 脚本                | 命令       | 说明                                   |
+| ------------------- | ---------- | -------------------------------------- |
+| `npm run dev`       | `vp dev`   | demo 开发服务器                        |
+| `npm run build`     | `vp build` | demo 构建 → `dist-demo/`               |
+| `npm run build:lib` | `vp pack`  | 库构建 → `dist/`（ESM + d.ts，tsdown） |
+| `npm run test`      | `vp test`  | Vitest（49 个单测，纯逻辑无 WebGL）    |
+| `npm run check`     | `vp check` | 类型检查 + Oxlint + Oxfmt              |
 
 ## Roadmap
 
@@ -183,6 +186,7 @@ npm publish
 ---
 
 <a id="english"></a>
+
 # English
 
 A lightweight **living-presence layer** for [LivLiv Player](https://github.com/livliv-dev/player): your web VTuber stops being a static widget and starts reacting to what the user does — clicks, hovers, scroll, idle time. Pure browser, no OBS.
@@ -193,14 +197,14 @@ A lightweight **living-presence layer** for [LivLiv Player](https://github.com/l
 - ~**7 KB gzipped** (excluding the player itself)
 
 ```ts
-import { Player } from '@livliv-dev/player'
-import { LivePresence } from 'ai-vtuber-web'
+import { Player } from "@livliv-dev/player";
+import { LivePresence } from "ai-vtuber-web";
 
-const player = new Player(canvas)
-await player.load('https://cdn.jsdelivr.net/gh/livliv-dev/player@main/characters/d03/')
+const player = new Player(canvas);
+await player.load("https://cdn.jsdelivr.net/gh/livliv-dev/player@main/characters/d03/");
 
-const presence = new LivePresence(player, { mode: 'auto', agent: { chat: myChat } })
-presence.start()
+const presence = new LivePresence(player, { mode: "auto", agent: { chat: myChat } });
+presence.start();
 ```
 
 Breathing, blinking and pointer-following come from LivLiv Player's own `idle` / `followPointer`; ai-vtuber-web layers **behavior** on top: canvas clicks → surprised + hop, hovering links → shy, scrolling → gaze follows, 15 s idle → she finds something to do. Every rule is overridable; a custom `Strategy` is ~10 lines (see the Chinese section above, or [src/types.ts](src/types.ts) for the `Reaction` shape).

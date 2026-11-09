@@ -159,5 +159,13 @@ export interface LivePresenceConfig extends PresenceEventHooks {
 }
 
 export type RuleOverrides = Partial<
-  Record<PageEventType, { reaction: Reaction; cooldownMs?: number }[] | null>
+  Record<PageEventType, RuleEntry[] | null>
 >
+
+/** One rule table entry. `reaction` may be a factory receiving the event. */
+export interface RuleEntry {
+  /** Optional predicate; entry only considered when it returns true. */
+  match?: (event: PageEvent) => boolean
+  reaction: Reaction | ((event: PageEvent) => Reaction)
+  cooldownMs?: number
+}

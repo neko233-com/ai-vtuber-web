@@ -3,3 +3,4 @@ dist/
 dist-demo/
 *.log
 .DS_Store
+.vitest/

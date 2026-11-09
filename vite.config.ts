@@ -1,10 +1,13 @@
-import { defineConfig } from 'vite'
+import tsdownConfig from "./tsdown.config.js";
+
+import { defineConfig } from "vite-plus";
 
 export default defineConfig({
-  root: 'demo',
-  base: './',
+  pack: tsdownConfig,
+  root: "demo",
+  base: "./",
   build: {
-    outDir: '../dist-demo',
+    outDir: "../dist-demo",
     emptyOutDir: true,
   },
-})
+});

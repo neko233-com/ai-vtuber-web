@@ -7,15 +7,15 @@
  */
 
 // Core orchestrator
-export { LivePresence } from './core/LivePresence'
-export { PageSensor } from './core/PageSensor'
-export { Reactor } from './core/Reactor'
+export { LivePresence } from "./core/LivePresence";
+export { PageSensor } from "./core/PageSensor";
+export { Reactor } from "./core/Reactor";
 
 // Strategies
-export { RuleStrategy, DEFAULT_RULES } from './strategies/RuleStrategy'
-export { AgentStrategy } from './strategies/AgentStrategy'
-export type { RuleStrategyOptions } from './strategies/RuleStrategy'
-export type { AgentStrategyOptions } from './strategies/AgentStrategy'
+export { RuleStrategy, DEFAULT_RULES } from "./strategies/RuleStrategy";
+export { AgentStrategy } from "./strategies/AgentStrategy";
+export type { RuleStrategyOptions } from "./strategies/RuleStrategy";
+export type { AgentStrategyOptions } from "./strategies/AgentStrategy";
 
 // Types
 export type {
@@ -35,10 +35,10 @@ export type {
   PresenceEventHooks,
   RuleOverrides,
   RuleEntry,
-} from './types'
+} from "./types";
 
 // Utils worth exposing
-export { createBudget } from './util/throttle'
-export type { Budget, BudgetOptions } from './util/throttle'
-export { clamp } from './util/clamp'
-export { pick, jitter } from './util/rng'
+export { createBudget } from "./util/throttle";
+export type { Budget, BudgetOptions } from "./util/throttle";
+export { clamp } from "./util/clamp";
+export { pick, jitter } from "./util/rng";

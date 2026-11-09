@@ -52,7 +52,7 @@
 **Files:** Create `src/strategies/AgentStrategy.ts`; Test `tests/agent-strategy.test.ts`.
 
 - [ ] Implement constructor `{ chat, expressions, timeoutMs = 4000, fallback, recentSize = 3, characterName }`:
-  - `decide(event)`: if `inFlight` → return `fallback.decide(event)` immediately (no queue). Else build messages: system prompt (fixed persona: "behavior brain of a web VTuber, output ONLY JSON, schema {expression, act, params, say, holdMs}", whitelists of `expressions` ids, acts `[nod,shake,tilt,hop,shy]`, param keys from `PARAM_RANGES`), user payload = event summary + `idleMs` + last N events + last decision. `AbortController` + `setTimeout` timeout → `chat(messages)` → strip ```` ```json ```` fences → `JSON.parse` → validate: unknown `expression`/`act` dropped, `params` clamped by `PARAM_RANGES`, non-numeric dropped → return Reaction. On ANY error/timeout → `fallback.decide(event)`. Track `recent` ring buffer. `inFlight` reset in `finally`.
+  - `decide(event)`: if `inFlight` → return `fallback.decide(event)` immediately (no queue). Else build messages: system prompt (fixed persona: "behavior brain of a web VTuber, output ONLY JSON, schema {expression, act, params, say, holdMs}", whitelists of `expressions` ids, acts `[nod,shake,tilt,hop,shy]`, param keys from `PARAM_RANGES`), user payload = event summary + `idleMs` + last N events + last decision. `AbortController` + `setTimeout` timeout → `chat(messages)` → strip ` ```json ` fences → `JSON.parse` → validate: unknown `expression`/`act` dropped, `params` clamped by `PARAM_RANGES`, non-numeric dropped → return Reaction. On ANY error/timeout → `fallback.decide(event)`. Track `recent` ring buffer. `inFlight` reset in `finally`.
 - [ ] Tests with fake `chat` (deferred promises): valid JSON → mapped reaction; fenced JSON → parsed; timeout (advance fake timers, abort) → fallback reaction; chat throws → fallback; illegal expression dropped but act kept; busy (second decide while first pending) → immediate fallback.
 - [ ] Run `npx vp test` → PASS. Commit: `feat: AgentStrategy with timeout fallback and validation`.
 
@@ -107,15 +107,15 @@
 - [ ] `demo/panel.ts`: wire controls → `presence.setMode` / rebuild presence with agent config; agent chat impl:
   ```ts
   const chat = async (msgs) => {
-    const res = await fetch(baseURL.replace(/\/$/, '') + '/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+    const res = await fetch(baseURL.replace(/\/$/, "") + "/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({ model, messages: msgs, temperature: 0.7, max_tokens: 200 }),
-    })
-    if (!res.ok) throw new Error(`LLM HTTP ${res.status}`)
-    const data = await res.json()
-    return data.choices?.[0]?.message?.content ?? ''
-  }
+    });
+    if (!res.ok) throw new Error(`LLM HTTP ${res.status}`);
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content ?? "";
+  };
   ```
 - [ ] `demo/main.ts`: create `Player`, load character, `LivePresence` with `onEvent/onReaction/onSay/onError` → log lines (capped 200), fallback `startFaceTracking`? No — out of MVP scope; skip.
 - [ ] `demo/style.css`: minimal dark layout, panel scroll.

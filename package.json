@@ -2,37 +2,34 @@
   "name": "ai-vtuber-web",
   "version": "0.1.0",
   "description": "Living-presence layer for LivLiv Player: rules / LLM-agent strategies that make your web VTuber breathe, react to clicks, hovers, scroll and idle — no OBS, pure browser.",
-  "type": "module",
+  "keywords": [
+    "agent",
+    "livliv",
+    "llm",
+    "presence",
+    "virtual-avatar",
+    "vtuber",
+    "webgl"
+  ],
   "license": "MIT",
   "author": "neko233-com",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/neko233-com/ai-vtuber-web.git"
   },
-  "keywords": [
-    "vtuber",
-    "livliv",
-    "presence",
-    "agent",
-    "llm",
-    "webgl",
-    "virtual-avatar"
-  ],
-  "engines": {
-    "node": ">=20"
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
   "files": [
     "dist"
   ],
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    }
+  },
   "scripts": {
     "dev": "vp dev",
     "build": "vp build",
@@ -40,6 +37,12 @@
     "test": "vp test",
     "check": "vp check",
     "fmt": "vp fmt"
+  },
+  "devDependencies": {
+    "@livliv-dev/player": "^0.3.0",
+    "typescript": "^7.0.2",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.0",
+    "vite-plus": "1.5.0"
   },
   "peerDependencies": {
     "@livliv-dev/player": ">=0.1.0"
@@ -49,11 +52,10 @@
       "optional": true
     }
   },
-  "devDependencies": {
-    "@livliv-dev/player": "^0.3.0",
-    "tsdown": "^0.23.7",
-    "typescript": "^7.0.2",
-    "vite": "^8.3.6",
-    "vite-plus": "^1.5.0"
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.0"
+  },
+  "engines": {
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   }
 }

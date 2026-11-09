@@ -62,21 +62,24 @@ DOM 事件 ─▶ PageSensor ─▶ PageEvent
 ## 5. 公共 API
 
 ```ts
-import { LivePresence } from 'ai-vtuber-web'
-import { Player } from '@livliv-dev/player'
+import { LivePresence } from "ai-vtuber-web";
+import { Player } from "@livliv-dev/player";
 
-const player = new Player(canvas)
-await player.load('https://cdn.jsdelivr.net/gh/livliv-dev/player@main/characters/d03/')
+const player = new Player(canvas);
+await player.load("https://cdn.jsdelivr.net/gh/livliv-dev/player@main/characters/d03/");
 
 const presence = new LivePresence(player, {
-  mode: 'auto',                          // 'rules' | 'agent' | 'auto'，默认 'auto'
-  agent: { chat: myOpenAICompatChat },   // 用户自带；auto 模式无此项则自动 rules
+  mode: "auto", // 'rules' | 'agent' | 'auto'，默认 'auto'
+  agent: { chat: myOpenAICompatChat }, // 用户自带；auto 模式无此项则自动 rules
   events: { click: true, hover: true, scroll: true, pointerMove: true, idle: true },
   throttle: { minIntervalMs: 1200, maxPerMin: 24 },
   idleAfterMs: 15000,
-  onEvent, onReaction, onSay, onError,   // 可选回调
-})
-presence.start()
+  onEvent,
+  onReaction,
+  onSay,
+  onError, // 可选回调
+});
+presence.start();
 // presence.setMode('rules')  运行时切换
 // presence.react({ type: 'click' })  手动注入事件（测试/自定义）
 // presence.dispose()
@@ -85,33 +88,34 @@ presence.start()
 类型定义（导出）：
 
 ```ts
-type PresenceMode = 'rules' | 'agent' | 'auto'
+type PresenceMode = "rules" | "agent" | "auto";
 
 interface PageEvent {
-  type: 'click' | 'hover-enter' | 'hover-leave' | 'scroll' | 'pointer-move' | 'idle'
-  target?: { tag: string; id?: string; classes?: string[]; text?: string } // text 截断到 80 字符
-  x?: number; y?: number
-  pointerSpeed?: number   // px/s
-  idleMs?: number
+  type: "click" | "hover-enter" | "hover-leave" | "scroll" | "pointer-move" | "idle";
+  target?: { tag: string; id?: string; classes?: string[]; text?: string }; // text 截断到 80 字符
+  x?: number;
+  y?: number;
+  pointerSpeed?: number; // px/s
+  idleMs?: number;
 }
 
 interface Reaction {
-  expression?: string | null   // null = 回到中性
-  weight?: number              // 0..1，默认 1
-  act?: string                 // 'nod' | 'shake' | 'tilt' | 'hop' | 'shy'
-  blink?: boolean
-  params?: Record<string, number>      // 每帧叠加的 offset，如 { browLY: 0.4 }
-  poke?: { x: number; y: number; strength?: number }
-  say?: string                 // 只透传给 onSay 回调（本库不做 TTS）
-  holdMs?: number              // 保持时长，默认 900
-  decayMs?: number             // 回落时长，默认 600
+  expression?: string | null; // null = 回到中性
+  weight?: number; // 0..1，默认 1
+  act?: string; // 'nod' | 'shake' | 'tilt' | 'hop' | 'shy'
+  blink?: boolean;
+  params?: Record<string, number>; // 每帧叠加的 offset，如 { browLY: 0.4 }
+  poke?: { x: number; y: number; strength?: number };
+  say?: string; // 只透传给 onSay 回调（本库不做 TTS）
+  holdMs?: number; // 保持时长，默认 900
+  decayMs?: number; // 回落时长，默认 600
 }
 
 interface Strategy {
-  name: string
-  decide(event: PageEvent): Reaction | null | Promise<Reaction | null>
-  init?(ctx: { player: PlayerLike }): void | Promise<void>
-  dispose?(): void
+  name: string;
+  decide(event: PageEvent): Reaction | null | Promise<Reaction | null>;
+  init?(ctx: { player: PlayerLike }): void | Promise<void>;
+  dispose?(): void;
 }
 ```
 
@@ -122,13 +126,13 @@ interface Strategy {
 
 ### 6.1 RuleStrategy（默认规则表，全部可覆盖）
 
-| 事件 | 默认反应 | 冷却 |
-|---|---|---|
-| click（画布上） | `act('hop')` + `expression:'surprised'` + 微挑眉 offset | 3s |
-| click（页面其他） | `expression:'smile'` + `blink` | 5s |
-| hover-enter（`a`、`button`、`[data-vtuber-reactive]`） | `expression:'shy'` 或 `'smile'`（随机） | 6s |
-| scroll | gaze/头微偏（`eyeBallX`/`angleY` offset，方向随滚动方向） | 1.2s |
-| idle（每 `idleAfterMs` 无活动） | 随机小动作：瞟向随机方向 / `act('tilt')` / 换随机轻度表情 | 8s |
+| 事件                                                   | 默认反应                                                  | 冷却 |
+| ------------------------------------------------------ | --------------------------------------------------------- | ---- |
+| click（画布上）                                        | `act('hop')` + `expression:'surprised'` + 微挑眉 offset   | 3s   |
+| click（页面其他）                                      | `expression:'smile'` + `blink`                            | 5s   |
+| hover-enter（`a`、`button`、`[data-vtuber-reactive]`） | `expression:'shy'` 或 `'smile'`（随机）                   | 6s   |
+| scroll                                                 | gaze/头微偏（`eyeBallX`/`angleY` offset，方向随滚动方向） | 1.2s |
+| idle（每 `idleAfterMs` 无活动）                        | 随机小动作：瞟向随机方向 / `act('tilt')` / 换随机轻度表情 | 8s   |
 
 - **防机械感**：每次同类反应 70% 概率从候选里随机选一（每个默认反应带 2-3 个变体）；参数 offset 幅度 ±20% 随机。
 - 规则表支持用户以 `rules: { click: [Reaction...] , ... }` 整体或单项覆盖；`null` 表示禁用该类事件。
@@ -182,14 +186,14 @@ ai-vtuber-web/
 
 工具链用 **vite-plus**（本地 `vite-plus` devDependency + `vp` CLI）：
 
-| 脚本 | 命令 | 说明 |
-|---|---|---|
-| `dev` | `vp dev` | demo 开发服务器 |
-| `build` | `vp build` | demo 构建到 `dist-demo/` |
-| `build:lib` | `vp pack` | tsdown 库构建 → `dist/`（ESM + d.ts） |
-| `test` | `vp test` | Vitest 单测 |
-| `check` | `vp check` | 类型 + Oxlint |
-| `fmt` | `vp fmt` | Oxfmt |
+| 脚本        | 命令       | 说明                                  |
+| ----------- | ---------- | ------------------------------------- |
+| `dev`       | `vp dev`   | demo 开发服务器                       |
+| `build`     | `vp build` | demo 构建到 `dist-demo/`              |
+| `build:lib` | `vp pack`  | tsdown 库构建 → `dist/`（ESM + d.ts） |
+| `test`      | `vp test`  | Vitest 单测                           |
+| `check`     | `vp check` | 类型 + Oxlint                         |
+| `fmt`       | `vp fmt`   | Oxfmt                                 |
 
 package.json 关键字段：`exports`（`.` → dist/index.js + types）、`files: ["dist"]`、`peerDependencies: { "@livliv-dev/player": "*" }`、`engines.node >= 20`。
 

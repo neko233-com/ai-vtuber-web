@@ -1,0 +1,59 @@
+{
+  "name": "ai-vtuber-web",
+  "version": "0.1.0",
+  "description": "Living-presence layer for LivLiv Player: rules / LLM-agent strategies that make your web VTuber breathe, react to clicks, hovers, scroll and idle — no OBS, pure browser.",
+  "type": "module",
+  "license": "MIT",
+  "author": "neko233-com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neko233-com/ai-vtuber-web.git"
+  },
+  "keywords": [
+    "vtuber",
+    "livliv",
+    "presence",
+    "agent",
+    "llm",
+    "webgl",
+    "virtual-avatar"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp build",
+    "build:lib": "vp pack",
+    "test": "vp test",
+    "check": "vp check",
+    "fmt": "vp fmt"
+  },
+  "peerDependencies": {
+    "@livliv-dev/player": ">=0.1.0"
+  },
+  "peerDependenciesMeta": {
+    "@livliv-dev/player": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@livliv-dev/player": "^0.3.0",
+    "tsdown": "^0.23.7",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6",
+    "vite-plus": "^1.5.0"
+  }
+}

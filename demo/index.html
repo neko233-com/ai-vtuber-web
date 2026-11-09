@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ai-vtuber-web demo — living presence for LivLiv Player</title>
+  </head>
+  <body>
+    <div id="app">
+      <main id="stage-wrap">
+        <canvas id="stage" class="vtuber-canvas" width="480" height="600"></canvas>
+        <div id="stage-hint">移动鼠标 / 点击页面 / 悬停按钮 / 静置 15 秒，看她的反应</div>
+        <footer id="credit">
+          Characters:
+          <a href="https://livliv.ai" target="_blank" rel="noopener">LivLiv</a> (livliv.ai) ·
+          player:
+          <a href="https://github.com/livliv-dev/player" target="_blank" rel="noopener"
+            >@livliv-dev/player</a
+          >
+        </footer>
+      </main>
+      <aside id="panel">
+        <h1>ai-vtuber-web</h1>
+        <p class="sub">活人感层 demo · rules / agent 双策略</p>
+
+        <section>
+          <h2>模式</h2>
+          <div id="mode-row">
+            <button id="mode-rules" class="mode-btn active">rules（规则）</button>
+            <button id="mode-agent" class="mode-btn">agent（LLM）</button>
+          </div>
+        </section>
+
+        <section id="agent-config" hidden>
+          <h2>Agent 配置（自带 endpoint）</h2>
+          <label>Base URL <input id="agent-url" placeholder="https://api.deepseek.com/v1" /></label>
+          <label
+            >API Key <input id="agent-key" type="password" placeholder="sk-…（只存内存）"
+          /></label>
+          <label>Model <input id="agent-model" placeholder="deepseek-chat" /></label>
+          <label class="check">
+            <input id="agent-remember" type="checkbox" />
+            记住 URL/Model（明文 localStorage，key 不存）
+          </label>
+          <button id="agent-apply">应用配置并切换 agent 模式</button>
+        </section>
+
+        <section>
+          <h2>角色</h2>
+          <select id="char-select">
+            <option value="d03">Nana（d03）</option>
+            <option value="k01">Sena（k01）</option>
+            <option value="char06">Aoi（char06）</option>
+            <option value="q02">Mochi（q02）</option>
+          </select>
+          <label class="file-label"
+            >本地 .livliv / 文件夹
+            <input id="char-file" type="file" multiple />
+          </label>
+        </section>
+
+        <section>
+          <h2>触发场景</h2>
+          <div id="triggers">
+            <button data-vtuber-reactive id="trig-click">点我（canvas 点击）</button>
+            <button data-vtuber-reactive id="trig-hover">悬停我（hover）</button>
+            <div id="trig-scroll" tabindex="0">
+              滚动区 ↓
+              <div style="height: 80px"></div>
+              ↑ 滚动我
+            </div>
+            <span id="trig-idle">静置 15s 触发 idle</span>
+          </div>
+        </section>
+
+        <section>
+          <h2>事件日志</h2>
+          <div id="log"></div>
+        </section>
+      </aside>
+    </div>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>
